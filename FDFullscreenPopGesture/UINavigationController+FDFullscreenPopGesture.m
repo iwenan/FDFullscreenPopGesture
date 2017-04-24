@@ -45,11 +45,12 @@
     }
     
     // Ignore when the beginning location is beyond max allowed initial distance to left edge.
-    CGPoint beginningLocation = [gestureRecognizer locationInView:gestureRecognizer.view];
-    CGFloat maxAllowedInitialDistance = topViewController.fd_interactivePopMaxAllowedInitialDistanceToLeftEdge;
-    if (maxAllowedInitialDistance > 0 && beginningLocation.x > maxAllowedInitialDistance) {
-        return NO;
-    }
+    // 如果采用UIPanGestureRecognizer 时，用来判断滑动距离
+//    CGPoint beginningLocation = [gestureRecognizer locationInView:gestureRecognizer.view];
+//    CGFloat maxAllowedInitialDistance = topViewController.fd_interactivePopMaxAllowedInitialDistanceToLeftEdge;
+//    if (maxAllowedInitialDistance > 0 && beginningLocation.x > maxAllowedInitialDistance) {
+//        return NO;
+//    }
 
     // Ignore pan gesture when the navigation controller is currently in transition.
     if ([[self.navigationController valueForKey:@"_isTransitioning"] boolValue]) {
@@ -57,10 +58,11 @@
     }
     
     // Prevent calling the handler when the gesture begins in an opposite direction.
-    CGPoint translation = [gestureRecognizer translationInView:gestureRecognizer.view];
-    if (translation.x <= 0) {
-        return NO;
-    }
+    // 为UIPanGestureRecognizer 手势时 用来判断左滑的方向
+//    CGPoint translation = [gestureRecognizer translationInView:gestureRecognizer.view];
+//    if (translation.x <= 0) {
+//        return NO;
+//    }
     
     return YES;
 }
@@ -208,14 +210,15 @@ typedef void (^_FDViewControllerWillAppearInjectBlock)(UIViewController *viewCon
     return delegate;
 }
 
-- (UIPanGestureRecognizer *)fd_fullscreenPopGestureRecognizer
+- (UIScreenEdgePanGestureRecognizer *)fd_fullscreenPopGestureRecognizer
 {
-    UIPanGestureRecognizer *panGestureRecognizer = objc_getAssociatedObject(self, _cmd);
+    // 原为UIPanGestureRecognizer 修改为UIScreenEdgePanGestureRecognizer by：wenan 16.11.11
+    UIScreenEdgePanGestureRecognizer *panGestureRecognizer = objc_getAssociatedObject(self, _cmd);
 
     if (!panGestureRecognizer) {
-        panGestureRecognizer = [[UIPanGestureRecognizer alloc] init];
+        panGestureRecognizer = [[UIScreenEdgePanGestureRecognizer alloc] init];
         panGestureRecognizer.maximumNumberOfTouches = 1;
-        
+        panGestureRecognizer.edges = UIRectEdgeLeft;
         objc_setAssociatedObject(self, _cmd, panGestureRecognizer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return panGestureRecognizer;
